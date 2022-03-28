@@ -31,11 +31,6 @@ class _DetailScreenState extends State<DetailScreen> {
       }
     }
 
-    var pending = "pending";
-    var processing = "processing";
-    var processed = "processed";
-    var approved = "approved";
-
     return Scaffold(
       // appBar: AppBar(
       //   elevation: 0.0,
@@ -72,7 +67,8 @@ class _DetailScreenState extends State<DetailScreen> {
                   child: Text(
                     "User Details",
                     textScaleFactor: 1.5,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, fontFamily: 'RobotoMono'),
                   ),
                 ),
                 // ignore: sized_box_for_whitespace
@@ -82,14 +78,19 @@ class _DetailScreenState extends State<DetailScreen> {
                     if (snapshot.hasData) {
                       return _userDetails(context, snapshot);
                     } else {
-                      return Center(child: Text('No User Data Found'));
+                      return Center(
+                          child: Text(
+                        'No User Data Found',
+                        style: TextStyle(fontFamily: 'RobotoMono'),
+                      ));
                     }
                   },
                 ),
                 // ignore: sized_box_for_whitespace
                 Container(
-                  padding: const EdgeInsets.all(8.0),
-                  height: MediaQuery.of(context).size.height * 0.5,
+                  padding:
+                      const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                  height: MediaQuery.of(context).size.height * 0.55,
                   width: MediaQuery.of(context).size.width,
                   child: FutureBuilder<dynamic>(
                     future: getData(),
@@ -109,135 +110,343 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                         );
                       } else {
-                        return ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            DataTable(
-                              columns: [
-                                DataColumn(
-                                    label: Text('SNO',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('AF.ID',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('NAME',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('CREATION DATE',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('STATUS',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold))),
-                                DataColumn(
-                                    label: Text('DOWNLOAD',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold)))
-                              ],
-                              rows: [
-                                DataRow(cells: [
-                                  DataCell(Text('1')),
-                                  DataCell(Text(
-                                      '${snapshot.data['affidavits'][0]['id']}')),
-                                  DataCell(Text(
-                                      '${snapshot.data['affidavits'][0]['name']}')),
-                                  DataCell(Text(
-                                    '${snapshot.data['affidavits'][0]['created_at']}',
-                                    style: TextStyle(),
-                                  )),
-                                  DataCell(
-                                    Text("Processing"),
-                                  ),
-                                  DataCell(
-                                    Row(
+                        return snapshot.data['affidavits'] == null
+                            ? Center(
+                                child: Text('No Documents Found'),
+                              )
+                            : ListView.builder(
+                                itemCount: snapshot.data['affidavits'].length,
+                                itemBuilder: (context, i) {
+                                  final int status =
+                                      snapshot.data['affidavits'][i]['status'];
+                                  // ignore: unused_element
+                                  Text _calRes(var status) {
+                                    Text res;
+                                    if (status == 0) {
+                                      res = Text('Pending');
+                                      return res;
+                                    } else if (status == 1) {
+                                      res = Text('Approved');
+                                      return res;
+                                    } else {
+                                      res = Text('Rejected');
+                                    }
+                                    return res;
+                                  }
+
+                                  return Card(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0)),
+                                    color: Colors.transparent.withOpacity(0.01),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        // Text(
-                                        //     '${snapshot.data['affidavits'][0]['url']}'),
-                                        TextButton.icon(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.download),
-                                            label: Text(""))
+                                        Container(
+                                          padding: EdgeInsets.only(
+                                              left: 10, top: 8, bottom: 10),
+                                          child: Text(
+                                            'SN0: ${i + 1}',
+                                            style: TextStyle(
+                                                fontFamily: 'RobotoMono',
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    "AF.ID:",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono',
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                      '${snapshot.data['affidavits'][i]['id']}'),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    "NAME:",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono',
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                      '${snapshot.data['affidavits'][i]['name']}'),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    "CREATION DATE:",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono',
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                      '${snapshot.data['affidavits'][i]['created_at']}'),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    "STATUS:",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono',
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: _calRes(status),
+                                                  // child: Text(
+                                                  //     '${snapshot.data['affidavits'][i]['status']}'),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      10.0),
+                                                  child: Text(
+                                                    "DOWNLOAD:",
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                            'RobotoMono',
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 4.0),
+                                                  child: IconButton(
+                                                      onPressed: () {},
+                                                      icon: Icon(
+                                                        Icons.download,
+                                                        color: Colors.blue,
+                                                      )),
+                                                  // child: Text(
+                                                  //     '${snapshot.data['affidavits'][i]['url']}'),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+
+                                        // ListTile(
+                                        //   dense: true,
+                                        //   title: Text('AF.ID'),
+                                        //   subtitle: Text(
+                                        //       '${snapshot.data['affidavits'][i]['id']}'),
+                                        // ),
+                                        // ListTile(
+                                        //   title: Text('Name'),
+                                        //   subtitle: Text(
+                                        //       '${snapshot.data['affidavits'][i]['name']}'),
+                                        // ),
+                                        // ListTile(
+                                        //   title: Text('Creation Date'),
+                                        //   subtitle: Text(
+                                        //       '${snapshot.data['affidavits'][i]['created_at']}'),
+                                        // ),
+                                        // ListTile(
+                                        //   title: Text('Status'),
+                                        //   subtitle: Text(
+                                        //       '${snapshot.data['affidavits'][i]['status']}'),
+                                        // ),
+                                        // ListTile(
+                                        //   title: Text('Download'),
+                                        //   subtitle: Text(
+                                        //       '${snapshot.data['affidavits'][i]['url']}'),
+                                        // ),
                                       ],
                                     ),
-                                  ),
-                                ]),
-                                // DataRow(cells: [
-                                //   DataCell(Text('2')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][1]['id']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][1]['name']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][1]['created_at']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][1]['status']}')),
-                                //   DataCell(
-                                //     Row(
-                                //       children: [
-                                //         // Text(
-                                //         //     '${snapshot.data['affidavits'][1]['url']}'),
-                                //         TextButton.icon(
-                                //             onPressed: () {},
-                                //             icon: Icon(Icons.download),
-                                //             label: Text(""))
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ]),
-                                // DataRow(cells: [
-                                //   DataCell(Text('3')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][2]['id']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][2]['name']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][2]['created_at']}')),
-                                //   DataCell(Text(
-                                //       '${snapshot.data['affidavits'][2]['status']}')),
-                                //   DataCell(
-                                //     Row(
-                                //       children: [
-                                //         // Text(
-                                //         //     '${snapshot.data['affidavits'][2]['url']}'),
-                                //         TextButton.icon(
-                                //             onPressed: () {},
-                                //             icon: Icon(Icons.download),
-                                //             label: Text(""))
-                                //       ],
-                                //     ),
-                                //   ),
-                                // ])
-                                // DataRow(cells: [
-                                //   DataCell(Text('1')),
-                                //   DataCell(Text('Stephen')),
-                                //   DataCell(Text('Actor')),
-                                //   DataCell(Text('1')),
-                                //   DataCell(Text('Stephen')),
-                                //   DataCell(Text('Actor')),
-                                // ]),
-                                // DataRow(cells: [
-                                //   DataCell(Text('1')),
-                                //   DataCell(Text('Stephen')),
-                                //   DataCell(Text('Actor')),
-                                //   DataCell(Text('1')),
-                                //   DataCell(Text('Stephen')),
-                                //   DataCell(Text('Actor')),
-                                // ]),
-                              ],
-                            )
-                          ],
-                        );
+                                  );
+                                });
+                        // return ListView(
+                        //   scrollDirection: Axis.horizontal,
+                        //   children: [
+                        //     DataTable(
+                        //       columns: [
+                        //         DataColumn(
+                        //             label: Text('SNO',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold))),
+                        //         DataColumn(
+                        //             label: Text('AF.ID',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold))),
+                        //         DataColumn(
+                        //             label: Text('NAME',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold))),
+                        //         DataColumn(
+                        //             label: Text('CREATION DATE',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold))),
+                        //         DataColumn(
+                        //             label: Text('STATUS',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold))),
+                        //         DataColumn(
+                        //             label: Text('DOWNLOAD',
+                        //                 style: TextStyle(
+                        //                     fontSize: 18,
+                        //                     fontWeight: FontWeight.bold)))
+                        //       ],
+                        //       rows: [
+                        //         DataRow(cells: [
+                        //           DataCell(Text('1')),
+                        //           DataCell(Text(
+                        //               '${snapshot.data['affidavits'][0]['id']}')),
+                        //           DataCell(Text(
+                        //               '${snapshot.data['affidavits'][0]['name']}')),
+                        //           DataCell(Text(
+                        //             '${snapshot.data['affidavits'][0]['created_at']}',
+                        //             style: TextStyle(),
+                        //           )),
+                        //           DataCell(
+                        //             Text("Processing"),
+                        //           ),
+                        //           DataCell(
+                        //             Row(
+                        //               children: [
+                        //                 // Text(
+                        //                 //     '${snapshot.data['affidavits'][0]['url']}'),
+                        //                 TextButton.icon(
+                        //                     onPressed: () {},
+                        //                     icon: Icon(Icons.download),
+                        //                     label: Text(""))
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ]),
+                        //         // DataRow(cells: [
+                        //         //   DataCell(Text('2')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][1]['id']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][1]['name']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][1]['created_at']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][1]['status']}')),
+                        //         //   DataCell(
+                        //         //     Row(
+                        //         //       children: [
+                        //         //         // Text(
+                        //         //         //     '${snapshot.data['affidavits'][1]['url']}'),
+                        //         //         TextButton.icon(
+                        //         //             onPressed: () {},
+                        //         //             icon: Icon(Icons.download),
+                        //         //             label: Text(""))
+                        //         //       ],
+                        //         //     ),
+                        //         //   ),
+                        //         // ]),
+                        //         // DataRow(cells: [
+                        //         //   DataCell(Text('3')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][2]['id']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][2]['name']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][2]['created_at']}')),
+                        //         //   DataCell(Text(
+                        //         //       '${snapshot.data['affidavits'][2]['status']}')),
+                        //         //   DataCell(
+                        //         //     Row(
+                        //         //       children: [
+                        //         //         // Text(
+                        //         //         //     '${snapshot.data['affidavits'][2]['url']}'),
+                        //         //         TextButton.icon(
+                        //         //             onPressed: () {},
+                        //         //             icon: Icon(Icons.download),
+                        //         //             label: Text(""))
+                        //         //       ],
+                        //         //     ),
+                        //         //   ),
+                        //         // ])
+                        //         // DataRow(cells: [
+                        //         //   DataCell(Text('1')),
+                        //         //   DataCell(Text('Stephen')),
+                        //         //   DataCell(Text('Actor')),
+                        //         //   DataCell(Text('1')),
+                        //         //   DataCell(Text('Stephen')),
+                        //         //   DataCell(Text('Actor')),
+                        //         // ]),
+                        //         // DataRow(cells: [
+                        //         //   DataCell(Text('1')),
+                        //         //   DataCell(Text('Stephen')),
+                        //         //   DataCell(Text('Actor')),
+                        //         //   DataCell(Text('1')),
+                        //         //   DataCell(Text('Stephen')),
+                        //         //   DataCell(Text('Actor')),
+                        //         // ]),
+                        //       ],
+                        //     )
+                        //   ],
+                        // );
                         // return DataTable(
                         //   border: TableBorder.all(
                         //       borderRadius: BorderRadius.only(
@@ -502,7 +711,8 @@ class _DetailScreenState extends State<DetailScreen> {
             alignment: Alignment.center,
             child: Text("Existing Affidavits",
                 textScaleFactor: 1.5,
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontFamily: 'RobotoMono')),
           )
         ],
       ),
